@@ -19,9 +19,36 @@ export interface Notification {
   read: boolean
 }
 
+export interface Product {
+  id: string
+  name: string
+  price: number
+  stock: number
+  category: string
+  unit: string
+  description: string
+  image: string
+  available: boolean
+}
+
+export interface OpeningHour {
+  day: string
+  isOpen: boolean
+  openTime: string
+  closeTime: string
+}
+
+export interface StoreInfo {
+  logo: string
+  name: string
+  address: string
+  phone: string
+}
+
 export interface StoreData {
   storeName: string
   storeStatus: boolean
+  storeStatusManualOverride: boolean
   revenueToday: number
   ordersToday: number
   completedOrders: number
@@ -31,12 +58,16 @@ export interface StoreData {
   totalReviews: number
   recentOrders: Order[]
   notifications: Notification[]
+  products: Product[]
+  openingHours: OpeningHour[]
+  storeInfo: StoreInfo
 }
 
 // Placeholder data - will be replaced by Firebase/Firestore bindings
 export const placeholderStoreData: StoreData = {
   storeName: "{storeName}",
   storeStatus: true, // {storeStatus}
+  storeStatusManualOverride: false, // {storeStatusManualOverride}
   revenueToday: 1250.80, // {revenueToday}
   ordersToday: 68, // {ordersToday}
   completedOrders: 52, // {completedOrders}
@@ -146,4 +177,79 @@ export const placeholderStoreData: StoreData = {
       read: true,
     },
   ],
+  products: [
+    // {products} - placeholder binding for Firebase
+    {
+      id: "p1",
+      name: "Gourmet Burger",
+      price: 8.99,
+      stock: 25,
+      category: "Fast Food",
+      unit: "item",
+      description: "Delicious gourmet burger with premium ingredients",
+      image: "/images/food-1.jpg",
+      available: true,
+    },
+    {
+      id: "p2",
+      name: "Fresh Salad",
+      price: 6.50,
+      stock: 40,
+      category: "Healthy",
+      unit: "item",
+      description: "Fresh garden salad with seasonal vegetables",
+      image: "/images/food-2.jpg",
+      available: true,
+    },
+    {
+      id: "p3",
+      name: "Chocolate Cake",
+      price: 4.50,
+      stock: 18,
+      category: "Desserts",
+      unit: "item",
+      description: "Rich chocolate cake with creamy frosting",
+      image: "/images/food-3.jpg",
+      available: true,
+    },
+    {
+      id: "p4",
+      name: "Sushi Platter",
+      price: 12.99,
+      stock: 12,
+      category: "Japanese",
+      unit: "item",
+      description: "Assorted sushi platter with fresh fish",
+      image: "/images/food-4.jpg",
+      available: true,
+    },
+    {
+      id: "p5",
+      name: "Organic Juice",
+      price: 3.00,
+      stock: 30,
+      category: "Beverages",
+      unit: "item",
+      description: "Freshly squeezed organic juice",
+      image: "/images/food-5.jpg",
+      available: true,
+    },
+  ],
+  openingHours: [
+    // {openingHours} - placeholder binding for Firebase
+    { day: "Monday", isOpen: true, openTime: "09:00", closeTime: "21:00" },
+    { day: "Tuesday", isOpen: true, openTime: "10:00", closeTime: "22:00" },
+    { day: "Wednesday", isOpen: true, openTime: "09:00", closeTime: "20:00" },
+    { day: "Thursday", isOpen: false, openTime: "09:00", closeTime: "21:00" },
+    { day: "Friday", isOpen: true, openTime: "11:00", closeTime: "23:00" },
+    { day: "Saturday", isOpen: true, openTime: "12:00", closeTime: "23:30" },
+    { day: "Sunday", isOpen: false, openTime: "10:00", closeTime: "18:00" },
+  ],
+  storeInfo: {
+    // {storeInfo} - placeholder binding for Firebase
+    logo: "",
+    name: "My Electronics Shop",
+    address: "1234 Main Street, Suite 100, New York, NY 10001",
+    phone: "+1 (212) 555-1234",
+  },
 }

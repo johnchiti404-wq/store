@@ -16,6 +16,7 @@ import {
 
 interface SettingsPageProps {
   onLogout: () => void
+  onNavigate: (page: string) => void
 }
 
 const settingsItems = [
@@ -26,6 +27,7 @@ const settingsItems = [
     description: "Edit store name, address, contact details",
     color: "bg-primary/15",
     iconColor: "text-primary",
+    navigateTo: "storeInfo",
   },
   {
     id: "productsButton",
@@ -34,6 +36,7 @@ const settingsItems = [
     description: "Add new products, edit items, upload product images",
     color: "bg-[#22c55e]/15",
     iconColor: "text-[#22c55e]",
+    navigateTo: "addProduct",
   },
   {
     id: "categoriesButton",
@@ -42,6 +45,7 @@ const settingsItems = [
     description: "Manage product categories",
     color: "bg-[#f97316]/15",
     iconColor: "text-[#f97316]",
+    navigateTo: "products",
   },
   {
     id: "openingHoursButton",
@@ -50,6 +54,7 @@ const settingsItems = [
     description: "Set business hours Monday to Sunday with toggles",
     color: "bg-[#6366f1]/15",
     iconColor: "text-[#6366f1]",
+    navigateTo: "openingHours",
   },
   {
     id: "deliverySettingsButton",
@@ -58,6 +63,7 @@ const settingsItems = [
     description: "Set delivery radius and delivery time",
     color: "bg-destructive/15",
     iconColor: "text-destructive",
+    navigateTo: null,
   },
   {
     id: "paymentSettingsButton",
@@ -66,6 +72,7 @@ const settingsItems = [
     description: "Connect payment gateway and payout account",
     color: "bg-[#0ea5e9]/15",
     iconColor: "text-[#0ea5e9]",
+    navigateTo: null,
   },
   {
     id: "settingsNotificationsButton",
@@ -74,6 +81,7 @@ const settingsItems = [
     description: "Manage order notifications and alerts",
     color: "bg-[#eab308]/15",
     iconColor: "text-[#eab308]",
+    navigateTo: null,
   },
   {
     id: "securitySettingsButton",
@@ -82,10 +90,11 @@ const settingsItems = [
     description: "Change password and account security",
     color: "bg-[#8b5cf6]/15",
     iconColor: "text-[#8b5cf6]",
+    navigateTo: null,
   },
 ]
 
-export function SettingsPage({ onLogout }: SettingsPageProps) {
+export function SettingsPage({ onLogout, onNavigate }: SettingsPageProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Fixed Header */}
@@ -110,6 +119,7 @@ export function SettingsPage({ onLogout }: SettingsPageProps) {
             <button
               key={item.id}
               id={item.id}
+              onClick={() => item.navigateTo && onNavigate(item.navigateTo)}
               className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 shadow-sm w-full text-left transition-all duration-200 active:scale-[0.98] hover:bg-accent/50"
             >
               <div className={`${item.color} w-10 h-10 rounded-full flex items-center justify-center shrink-0`}>

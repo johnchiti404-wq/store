@@ -4,7 +4,7 @@ import { Star, TrendingUp } from "lucide-react"
 import type { StoreData } from "@/lib/store-data"
 
 interface DashboardPageProps {
-  data: StoreData
+  data: StoreData & { storeInfo?: { logo?: string } }
   onToggleStatus: () => void
   onNavigate: (page: string) => void
 }
@@ -12,12 +12,28 @@ interface DashboardPageProps {
 export function DashboardPage({ data, onToggleStatus, onNavigate }: DashboardPageProps) {
   const recentOrders = data.recentOrders.slice(0, 5)
 
+  const logoUrl = data.storeInfo?.logo
+
   return (
     <div className="flex flex-col h-full">
       {/* Fixed Header */}
-      <div className="bg-card px-4 pt-5 pb-4 shrink-0">
+      <div className="bg-card px-4 pt-5 pb-4 shrink-0 relative overflow-hidden">
+        {/* Blurred Logo Background */}
+        {logoUrl && (
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              backgroundImage: `url(${logoUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(40px)",
+              opacity: 0.15,
+              transform: "scale(1.2)",
+            }}
+          />
+        )}
         {/* Store name + Revenue row */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between relative z-10">
           <div>
             <h1 className="text-xl font-bold text-card-foreground">{data.storeName}</h1>
             <div className="flex items-center gap-2 mt-1">
@@ -57,7 +73,7 @@ export function DashboardPage({ data, onToggleStatus, onNavigate }: DashboardPag
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-cols-2 gap-3 mt-4 relative z-10">
           <div id="ordersTodayCard" className="bg-card border border-border rounded-xl p-3 shadow-sm transition-transform duration-200 active:scale-95">
             <p className="text-xs text-muted-foreground">Orders Today</p>
             <p className="text-2xl font-bold text-primary mt-1">{data.ordersToday}</p>
@@ -88,7 +104,7 @@ export function DashboardPage({ data, onToggleStatus, onNavigate }: DashboardPag
         </div>
 
         {/* Recent Orders Header */}
-        <div className="flex items-center justify-between mt-4 mb-2">
+        <div className="flex items-center justify-between mt-4 mb-2 relative z-10">
           <h2 className="text-base font-bold text-card-foreground">Recent Orders</h2>
           <button
             id="viewAllOrdersButton"
