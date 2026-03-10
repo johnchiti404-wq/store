@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
+import { onAuthStateChanged, signOut } from "firebase/auth"
+import { auth } from "@/lib/firebase"
+import { SignupPage } from "@/components/signup-page"
 import { DashboardPage } from "@/components/dashboard-page"
 import { OrdersPage } from "@/components/orders-page"
 import { NotificationsPage } from "@/components/notifications-page"
@@ -14,12 +17,48 @@ import { placeholderStoreData } from "@/lib/store-data"
 import type { StoreData, Product, OpeningHour, StoreInfo } from "@/lib/store-data"
 
 export default function MerchantApp() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [activePage, setActivePage] = useState("dashboard")
   const [storeData, setStoreData] = useState<StoreData>(placeholderStoreData)
   const [direction, setDirection] = useState<"left" | "right">("right")
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
 
   const pageOrder = ["dashboard", "orders", "notifications", "settings"]
+
+  // Check authentication state on mount
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user)
+      setIsLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  // Handle successful signup
+  const handleSignupSuccess = useCallback((userData: {
+    uid: string
+    firstName: string
+    surname: string
+    storeName: string
+    phone: string
+    email: string
+    address: string
+  }) => {
+    // Update store data with user's info
+    setStoreData((prev) => ({
+      ...prev,
+      storeName: userData.storeName,
+      storeInfo: {
+        ...prev.storeInfo,
+        name: userData.storeName,
+        address: userData.address,
+        phone: userData.phone,
+      },
+    }))
+    setIsAuthenticated(true)
+  }, [])
 
   // Check if store should be open based on opening hours
   const checkStoreOpenStatus = useCallback(() => {
@@ -47,10 +86,12 @@ export default function MerchantApp() {
 
   // Check store status on mount and when opening hours change
   useEffect(() => {
-    checkStoreOpenStatus()
-    const interval = setInterval(checkStoreOpenStatus, 60000) // Check every minute
-    return () => clearInterval(interval)
-  }, [checkStoreOpenStatus])
+    if (isAuthenticated) {
+      checkStoreOpenStatus()
+      const interval = setInterval(checkStoreOpenStatus, 60000) // Check every minute
+      return () => clearInterval(interval)
+    }
+  }, [isAuthenticated, checkStoreOpenStatus])
 
   const handleNavigate = useCallback(
     (page: string) => {
@@ -81,8 +122,14 @@ export default function MerchantApp() {
     }))
   }, [])
 
-  const handleLogout = useCallback(() => {
-    // {logoutAction} - placeholder for Firebase Auth signOut
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut(auth)
+      setIsAuthenticated(false)
+      setActivePage("dashboard")
+    } catch (error) {
+      console.error("Logout error:", error)
+    }
   }, [])
 
   // Settings navigation handlers
@@ -177,6 +224,21 @@ export default function MerchantApp() {
   // Determine if bottom nav should be hidden
   const hideBottomNav = ["products", "addProduct", "openingHours", "storeInfo"].includes(activePage)
 
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-dvh w-full bg-background">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
+  // Show signup page if not authenticated
+  if (!isAuthenticated) {
+    return <SignupPage onSignupSuccess={handleSignupSuccess} />
+  }
+
+  // Show main dashboard app
   return (
     <div className="flex flex-col h-dvh w-full max-w-[1200px] mx-auto bg-background">
       {/* Page Content */}
